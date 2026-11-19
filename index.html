@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pythagoras Adventure</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'edu-blue': '#38bdf8', /* Sky blue */
+                        'edu-yellow': '#fde047', /* Yellow */
+                        'edu-purple': '#a855f7', /* Purple */
+                        'edu-mint': '#6ee7b7', /* Mint green */
+                        'edu-coral': '#fb7185', /* Coral */
+                        'edu-dark': '#1e293b'
+                    },
+                    fontFamily: {
+                        sans: ['"Nunito"', 'sans-serif'],
+                    },
+                    animation: {
+                        'bounce-slow': 'bounce 3s infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                        'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'slide-up': 'slideUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) both',
+                        'pop-in': 'popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both',
+                        'wiggle': 'wiggle 2s ease-in-out infinite',
+                        'flow-dash': 'flowDash 1s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-15px)' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        popIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.8)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' },
+                        },
+                        wiggle: {
+                            '0%, 100%': { transform: 'rotate(-3deg)' },
+                            '50%': { transform: 'rotate(3deg)' },
+                        },
+                        flowDash: {
+                            '0%': { backgroundPosition: '0 0' },
+                            '100%': { backgroundPosition: '0 15px' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <!-- html2pdf for Certificate -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            /* Langit Petualangan Ceria */
+            background: linear-gradient(135deg, #bae6fd 0%, #fbcfe8 50%, #fef08a 100%);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            overflow-x: hidden;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        /* Lapis 1: Pola Matematika Bergerak (Tema Petualangan) */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='20,80 80,80 20,20' fill='rgba(255,255,255,0.2)' stroke='rgba(255,255,255,0.5)' stroke-width='2'/%3E%3Cpath d='M140,40 h10 v-10 h10 v10 h10 v10 h-10 v10 h-10 v-10 h-10 z' fill='rgba(255,255,255,0.25)'/%3E%3Ccircle cx='150' cy='150' r='15' fill='none' stroke='rgba(255,255,255,0.4)' stroke-width='3'/%3E%3Cpolygon points='50,150 70,150 50,130' fill='rgba(56, 189, 248, 0.4)'/%3E%3C/svg%3E");
+            background-size: 250px 250px;
+            animation: scrollPattern 30s linear infinite;
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        /* Lapis 2: Awan/Kabut Petualangan Mengambang */
+        body::after {
+            content: '';
+            position: fixed;
+            top: -50%; left: -50%; right: -50%; bottom: -50%;
+            background-image: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.5) 0%, transparent 15%),
+                              radial-gradient(circle at 80% 60%, rgba(255,255,255,0.5) 0%, transparent 15%),
+                              radial-gradient(circle at 40% 80%, rgba(255,255,255,0.4) 0%, transparent 15%);
+            animation: floatClouds 25s ease-in-out infinite alternate;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes scrollPattern {
+            0% { background-position: 0px 0px; }
+            100% { background-position: 250px 250px; }
+        }
+
+        @keyframes floatClouds {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(3%, 4%) scale(1.1); }
+            100% { transform: translate(-3%, -2%) scale(1); }
+        }
+        
+        .btn-game {
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 8px 0 0 rgba(0,0,0,0.15), inset 0 2px 0 0 rgba(255,255,255,0.4);
+            border: 3px solid rgba(255,255,255,0.8);
+            border-radius: 9999px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+        .btn-game:hover {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 14px 0 0 rgba(0,0,0,0.15), inset 0 2px 0 0 rgba(255,255,255,0.6);
+        }
+        .btn-game:active {
+            transform: translateY(4px) scale(0.98);
+            box-shadow: 0 4px 0 0 rgba(0,0,0,0.15), inset 0 2px 0 0 rgba(255,255,255,0.3);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 4px solid rgba(255,255,255,1);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1), 0 0 30px rgba(255, 255, 255, 0.8);
+            border-radius: 2.5rem;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 45px -10px rgba(0, 0, 0, 0.15), 0 0 40px rgba(56, 189, 248, 0.3);
+        }
+
+        .page-transition {
+            animation: pop-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #e0f2fe; border-radius: 5px; }
+        ::-webkit-scrollbar-thumb { background: #38bdf8; border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: #0284c7; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel" data-type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, getDocs, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const { useState, useEffect, useRef, useMemo } = React;
+
+        // --- FIREBASE CONFIGURATION (Strict Rules Applied) ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'pythagoras-adventure-1';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            // Mock config for local testing if env vars missing. 
+            // In a real environment, __firebase_config is injected.
+            projectId: "demo-project"
+        };
+        
+        let app, db, auth;
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+        } catch (e) {
+            console.error("Firebase init error (expected in some mock environments):", e);
+        }
+
+        // --- DATA BENGKEL SOAL ---
+        const QUIZ_BANK = [
+            { id: 1, q: "Siapakah tokoh penemu Teorema Pythagoras?", options: ["Archimedes", "Pythagoras", "Euclid", "Newton"], a: 1 },
+            { id: 2, q: "Teorema Pythagoras hanya berlaku pada segitiga...", options: ["Sama sisi", "Sama kaki", "Siku-siku", "Sembarang"], a: 2 },
+            { id: 3, q: "Sisi terpanjang pada segitiga siku-siku disebut...", options: ["Alas", "Tinggi", "Hipotenusa", "Diagonal"], a: 2 },
+            { id: 4, q: "Rumus Teorema Pythagoras yang benar adalah...", options: ["a² = b² + c²", "c² = a² + b²", "b² = a² + c²", "c = a + b"], a: 1 },
+            { id: 5, q: "Jika panjang alas 3 cm dan tinggi 4 cm, berapakah sisi miringnya?", options: ["5 cm", "6 cm", "7 cm", "8 cm"], a: 0 },
+            { id: 6, q: "Manakah dari kelompok bilangan berikut yang merupakan Tripel Pythagoras?", options: ["3, 4, 6", "5, 12, 13", "6, 8, 11", "7, 8, 9"], a: 1 },
+            { id: 7, q: "Sebuah segitiga siku-siku memiliki sisi miring 10 cm dan alas 6 cm. Berapa tingginya?", options: ["8 cm", "7 cm", "6 cm", "5 cm"], a: 0 },
+            { id: 8, q: "Sebuah tangga panjangnya 5 meter disandarkan pada tembok. Jarak ujung bawah tangga ke tembok 3 meter. Berapa tinggi tembok yang dicapai tangga?", options: ["2 m", "3 m", "4 m", "5 m"], a: 2 },
+            { id: 9, q: "Jika a=8 dan b=15, maka nilai c pada segitiga siku-siku adalah...", options: ["16", "17", "18", "19"], a: 1 },
+            { id: 10, q: "Nilai kuadrat dari 12 adalah...", options: ["124", "144", "169", "100"], a: 1 },
+            { id: 11, q: "Akar kuadrat dari 225 adalah...", options: ["15", "25", "35", "5"], a: 0 },
+            { id: 12, q: "Berapa panjang diagonal persegi yang panjang sisinya 5 cm?", options: ["5√2 cm", "10 cm", "25 cm", "5 cm"], a: 0 },
+            { id: 13, q: "Diketahui segitiga siku-siku dengan sisi 9, 12, dan x. Jika x sisi miring, nilai x adalah?", options: ["14", "15", "16", "17"], a: 1 },
+            { id: 14, q: "Sebuah kapal berlayar ke utara sejauh 8 km, lalu ke timur sejauh 6 km. Jarak kapal dari titik awal adalah...", options: ["10 km", "12 km", "14 km", "100 km"], a: 0 },
+            { id: 15, q: "Manakah yang bukan Tripel Pythagoras?", options: ["7, 24, 25", "8, 15, 17", "9, 40, 41", "10, 12, 14"], a: 3 },
+            { id: 16, q: "Rumus untuk mencari tinggi (a) jika diketahui sisi miring (c) dan alas (b) adalah...", options: ["a² = c² + b²", "a² = c² - b²", "a = c - b", "a² = b² - c²"], a: 1 },
+            { id: 17, q: "Jika keliling segitiga siku-siku adalah 24 cm dan dua sisinya adalah 6 cm dan 8 cm, berapakah luasnya?", options: ["24 cm²", "48 cm²", "10 cm²", "14 cm²"], a: 0 }, // 6,8,10. L=1/2*6*8=24
+            { id: 18, q: "TV memiliki layar berbentuk persegi panjang dengan diagonal 50 inci dan tinggi 30 inci. Berapa lebarnya?", options: ["20 inci", "40 inci", "60 inci", "80 inci"], a: 1 },
+            { id: 19, q: "Tinggi sebuah tiang adalah 12 m. Seutas kawat ditarik dari puncak tiang ke tanah berjarak 5 m dari pangkal tiang. Panjang kawat adalah...", options: ["13 m", "15 m", "17 m", "14 m"], a: 0 },
+            { id: 20, q: "Jika dua sisi segitiga siku-siku sama panjang yaitu 10 cm, maka sisi miringnya adalah...", options: ["10 cm", "20 cm", "10√2 cm", "100 cm"], a: 2 }
+        ];
+
+        // --- ICONS COMPONENT (Replacing Lucide if script fails, but assuming it works) ---
+        const Icon = ({ name, size=24, color="currentColor", className="" }) => {
+            useEffect(() => {
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            });
+            return <i data-lucide={name} width={size} height={size} stroke={color} className={className}></i>;
+        };
+
+        // --- MAIN APP COMPONENT ---
+        const App = () => {
+            // -- STATE --
+            const [user, setUser] = useState(null); // Firebase Auth User
+            const [studentData, setStudentData] = useState(null); // {name, class, absent, role}
+            const [currentView, setCurrentView] = useState('home'); // home, login, teacherLogin, map, level1..6, quiz, reflection, cert, dashboard
+            const [progress, setProgress] = useState({
+                level1: false, level2: false, level3: false, level4: false, level5: false, level6: false,
+                lkpd: null, quizScore: null, reflection: null
+            });
+            const [modal, setModal] = useState({ show: false, message: '', type: 'info', onConfirm: null });
+            const [isTeacher, setIsTeacher] = useState(false);
+
+            // -- INIT FIREBASE AUTH --
+            useEffect(() => {
+                const initAuth = async () => {
+                    try {
+                        const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                        if (token) {
+                            await signInWithCustomToken(auth, token);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                        auth.onAuthStateChanged(async (u) => {
+                            if (u) {
+                                setUser(u);
+                                // Try to fetch existing data
+                                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'students', u.uid);
+                                const docSnap = await getDoc(docRef);
+                                if (docSnap.exists()) {
+                                    const data = docSnap.data();
+                                    setStudentData(data.profile);
+                                    setProgress(data.progress || progress);
+                                    if (data.profile.role === 'teacher') {
+                                        setIsTeacher(true);
+                                    }
+                                }
+                            }
+                        });
+                    } catch (error) {
+                        console.error("Auth error:", error);
+                        // Fallback for environment without Firebase configured
+                        console.warn("Running in Offline/Local Mode");
+                        const localData = localStorage.getItem('pythagoras_data');
+                        if (localData) {
+                            const parsed = JSON.parse(localData);
+                            setStudentData(parsed.profile);
+                            setProgress(parsed.progress);
+                            setIsTeacher(parsed.profile?.role === 'teacher');
+                            setUser({ uid: 'local-user-123' }); // Mock user
+                        }
+                    }
+                };
+                if(auth) initAuth();
+            }, []);
+
+            // -- DATA SAVING FUNCTION --
+            const saveData = async (newProfile, newProgress) => {
+                const updatedProfile = newProfile || studentData;
+                const updatedProgress = newProgress || progress;
+                
+                setStudentData(updatedProfile);
+                setProgress(updatedProgress);
+
+                if (user && db) {
+                    try {
+                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'students', user.uid);
+                        await setDoc(docRef, {
+                            profile: updatedProfile,
+                            progress: updatedProgress,
+                            updatedAt: serverTimestamp()
+                        }, { merge: true });
+                    } catch (e) {
+                        console.error("Error saving to Firebase:", e);
+                    }
+                } else {
+                    // Local Storage Fallback
+                    localStorage.setItem('pythagoras_data', JSON.stringify({
+                        profile: updatedProfile,
+                        progress: updatedProgress
+                    }));
+                }
+            };
+
+            const completeLevel = (levelKey) => {
+                const newProgress = { ...progress, [levelKey]: true };
+                saveData(null, newProgress);
+                triggerConfetti();
+                showAlert(`Bagus! Kamu telah menyelesaikan ${levelKey.toUpperCase()}!`, 'success');
+                setTimeout(() => setCurrentView('map'), 2000);
+            };
+
+            // -- UTILS --
+            const triggerConfetti = () => {
+                if (window.confetti) {
+                    window.confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#38bdf8', '#fde047', '#a855f7', '#6ee7b7', '#fb7185'] });
+                }
+            };
+
+            const showAlert = (message, type = 'info', onConfirm = null) => {
+                setModal({ show: true, message, type, onConfirm });
+            };
+
+            const closeAlert = () => {
+                if (modal.onConfirm) modal.onConfirm();
+                setModal({ show: false, message: '', type: 'info', onConfirm: null });
+            };
+
+            const handleLogout = () => {
+                setStudentData(null);
+                setIsTeacher(false);
+                setCurrentView('home');
+                localStorage.removeItem('pythagoras_data');
+                // Don't sign out of Firebase auth to keep the session for the playground, just clear app state.
+            }
+
+            // -- SUB-COMPONENTS --
+
+            const Mascot = ({ expression = 'happy', size = 'w-32 h-32', className="" }) => {
+                // Enhanced cute SVG mascot
+                return (
+                    <div className={`relative ${size} animate-float mx-auto ${className}`}>
+                        <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-2xl">
+                            <defs>
+                                <linearGradient id="mascotGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stopColor="#fef08a" />
+                                    <stop offset="100%" stopColor="#facc15" />
+                                </linearGradient>
+                            </defs>
+                            {/* Triangle Body */}
+                            <polygon points="10,90 90,90 10,10" fill="url(#mascotGrad)" stroke="#eab308" strokeWidth="4" strokeLinejoin="round"/>
+                            
+                            {/* Blush */}
+                            <circle cx="28" cy="65" r="8" fill="#fb7185" opacity="0.7" filter="blur(1.5px)"/>
+                            <circle cx="68" cy="65" r="8" fill="#fb7185" opacity="0.7" filter="blur(1.5px)"/>
+
+                            {/* Eyes (Bigger, cuter) */}
+                            <circle cx="35" cy="55" r="7" fill="#1e293b"/>
+                            <circle cx="55" cy="55" r="7" fill="#1e293b"/>
+                            
+                            {/* Eye Highlights */}
+                            <circle cx="33" cy="52" r="2.5" fill="white"/>
+                            <circle cx="37" cy="56" r="1" fill="white"/>
+                            <circle cx="53" cy="52" r="2.5" fill="white"/>
+                            <circle cx="57" cy="56" r="1" fill="white"/>
+
+                            {/* Smile (Thicker) */}
+                            {expression === 'happy' && <path d="M 35 72 Q 45 85 55 72" fill="transparent" stroke="#1e293b" strokeWidth="5" strokeLinecap="round"/>}
+                            {expression === 'thinking' && <circle cx="45" cy="75" r="4" fill="transparent" stroke="#1e293b" strokeWidth="3"/>}
+                            
+                            {/* Math symbols floating - playful */}
+                            <text x="70" y="30" fontSize="18" fontWeight="black" fill="#a855f7" className="animate-wiggle" style={{transformOrigin: '70px 30px'}}>a²</text>
+                            <text x="15" y="25" fontSize="16" fontWeight="black" fill="#38bdf8" className="animate-wiggle" style={{animationDelay: '0.5s', transformOrigin: '15px 25px'}}>+ b²</text>
+                        </svg>
+                    </div>
+                );
+            };
+
+            // Komponen Animasi Latar Belakang Menari untuk Setiap Level
+            const DancingShapes = () => (
+                <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 flex items-center justify-center">
+                    <div className="absolute top-[15%] left-[5%] text-sky-400 opacity-40 animate-bounce-slow text-6xl font-black drop-shadow-md">△</div>
+                    <div className="absolute top-[25%] right-[10%] text-emerald-400 opacity-40 animate-pulse-fast text-6xl font-black drop-shadow-md">+</div>
+                    <div className="absolute bottom-[20%] left-[15%] text-amber-400 opacity-40 animate-wiggle text-7xl font-black drop-shadow-md">○</div>
+                    <div className="absolute bottom-[10%] right-[20%] text-purple-400 opacity-40 animate-float text-6xl font-black drop-shadow-md" style={{animationDelay: '1s'}}>a²</div>
+                    <div className="absolute top-[45%] left-[80%] text-rose-400 opacity-40 animate-bounce-slow text-5xl font-black drop-shadow-md" style={{animationDelay: '0.5s'}}>&times;</div>
+                    <div className="absolute top-[60%] left-[10%] text-blue-400 opacity-40 animate-float text-5xl font-black drop-shadow-md" style={{animationDelay: '1.5s'}}>c²</div>
+                </div>
+            );
+
+            const Button = ({ onClick, children, variant = 'primary', className = '', icon = null }) => {
+                const variants = {
+                    primary: 'bg-gradient-to-r from-sky-400 to-blue-500 text-white',
+                    secondary: 'bg-gradient-to-r from-purple-400 to-fuchsia-500 text-white',
+                    accent: 'bg-gradient-to-r from-rose-400 to-pink-500 text-white',
+                    success: 'bg-gradient-to-r from-emerald-400 to-teal-500 text-white',
+                    warning: 'bg-gradient-to-r from-amber-400 to-orange-500 text-white'
+                };
+                return (
+                    <button 
+                        onClick={onClick}
+                        className={`btn-game px-6 py-3 rounded-full font-bold text-lg flex items-center justify-center gap-2 ${variants[variant]} ${className}`}
+                    >
+                        {icon && <Icon name={icon} size={20} />}
+                        {children}
+                    </button>
+                );
+            };
+
+            const TopNav = ({ title, showBack = true }) => (
+                <div className="flex justify-between items-center p-4 rounded-b-3xl shadow-sm mb-6 sticky top-0 z-50 glass-card bg-white/40 border-b-2 border-white/60">
+                    {showBack ? (
+                        <button onClick={() => setCurrentView('map')} className="p-2 bg-white/50 backdrop-blur-sm rounded-full hover:bg-white/80 text-slate-700 transition">
+                            <Icon name="arrow-left" />
+                        </button>
+                    ) : <div></div>}
+                    <h1 className="text-xl font-black text-edu-dark text-center flex-1 drop-shadow-sm">{title}</h1>
+                    <div className="flex gap-2">
+                        {studentData && <div className="text-sm font-bold bg-white/60 backdrop-blur-sm text-sky-800 px-3 py-1 rounded-full shadow-inner">{studentData.name}</div>}
+                    </div>
+                </div>
+            );
+
+            // --- VIEWS ---
+
+            const HomeView = () => (
+                <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
+                    {/* Decorative Background Elements */}
+                    <div className="absolute top-10 left-10 w-32 h-32 bg-pink-300 rounded-full mix-blend-multiply filter blur-2xl opacity-70 animate-float"></div>
+                    <div className="absolute bottom-20 right-20 w-40 h-40 bg-yellow-300 rounded-full mix-blend-multiply filter blur-2xl opacity-70 animate-float" style={{animationDelay: '1s'}}></div>
+                    <div className="absolute top-40 right-10 w-24 h-24 bg-blue-300 rounded-full mix-blend-multiply filter blur-2xl opacity-70 animate-float" style={{animationDelay: '2s'}}></div>
+
+                    <div className="glass-card p-8 rounded-3xl max-w-lg w-full flex flex-col items-center relative z-10">
+                        <Mascot size="w-48 h-48" className="animate-wiggle" />
+                        <h1 className="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-edu-blue via-edu-purple to-edu-coral mt-6 mb-2 drop-shadow-sm leading-tight">
+                            PYTHAGORAS<br/>
+                            <span className="text-amber-500 drop-shadow-md" style={{WebkitTextStroke: '2px white', WebkitTextFillColor: '#f59e0b'}}>ADVENTURE</span>
+                        </h1>
+                        <p className="text-lg font-bold text-slate-600 mb-6 italic bg-white/50 px-4 py-2 rounded-full shadow-inner border border-white/60">"Jelajahi Segitiga, Taklukkan Tantangan!"</p>
+                        
+                        <div className="bg-amber-50 border-2 border-amber-200 p-4 rounded-xl mb-8 text-sm text-amber-800 font-bold w-full text-left shadow-sm">
+                            <p className="flex items-center gap-2"><Icon name="user" size={16} className="text-amber-600"/> Guru: Nurhayati Lamasika, S.Pd.</p>
+                            <p className="flex items-center gap-2 mt-1"><Icon name="book" size={16} className="text-amber-600"/> Kelas VIII - MTsN 2 Pohuwato</p>
+                        </div>
+
+                        <div className="flex flex-col w-full gap-4">
+                            <Button onClick={() => setCurrentView('login')} variant="primary" icon="play" className="w-full text-xl py-4">MULAI PETUALANGAN</Button>
+                            <button onClick={() => setCurrentView('teacherLogin')} className="text-sm text-slate-500 hover:text-slate-700 underline font-bold mt-4">Login Guru</button>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const LoginView = () => {
+                const [name, setName] = useState('');
+                const [kelas, setKelas] = useState('');
+                const [absen, setAbsen] = useState('');
+
+                const handleStart = () => {
+                    if (!name || !kelas || !absen) {
+                        showAlert('Harap isi semua data ya!', 'warning');
+                        return;
+                    }
+                    const profile = { name, class: kelas, absent: absen, role: 'student' };
+                    saveData(profile, null);
+                    triggerConfetti();
+                    setCurrentView('map');
+                };
+
+                return (
+                    <div className="min-h-screen flex flex-col items-center justify-center p-6">
+                        <div className="glass-card p-8 rounded-3xl max-w-md w-full relative overflow-hidden">
+                            <div className="absolute -top-10 -right-10 opacity-20"><Mascot size="w-40 h-40"/></div>
+                            <h2 className="text-3xl font-black text-edu-dark mb-6 text-center">Identitas Pahlawan</h2>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-slate-700 font-bold mb-2">Nama Lengkap</label>
+                                    <input type="text" value={name} onChange={e => setName(e.target.value)} className="w-full p-3 rounded-xl border-2 border-slate-200 focus:border-edu-blue outline-none" placeholder="Ketik namamu..." />
+                                </div>
+                                <div>
+                                    <label className="block text-slate-700 font-bold mb-2">Kelas</label>
+                                    <select value={kelas} onChange={e => setKelas(e.target.value)} className="w-full p-3 rounded-xl border-2 border-slate-200 focus:border-edu-blue outline-none">
+                                        <option value="">Pilih Kelas...</option>
+                                        <option value="VIII A">VIII A</option>
+                                        <option value="VIII B">VIII B</option>
+                                        <option value="VIII C">VIII C</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-slate-700 font-bold mb-2">Nomor Absen</label>
+                                    <input type="number" value={absen} onChange={e => setAbsen(e.target.value)} className="w-full p-3 rounded-xl border-2 border-slate-200 focus:border-edu-blue outline-none" placeholder="Angka absen..." />
+                                </div>
+                                <Button onClick={handleStart} variant="success" className="w-full mt-6" icon="check-circle">MULAI BELAJAR</Button>
+                                <button onClick={() => setCurrentView('home')} className="w-full text-center text-slate-500 font-bold mt-2">Kembali</button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
+
+            const TeacherLoginView = () => {
+                const [pin, setPin] = useState('');
+                const handleLogin = () => {
+                    if (pin === 'GURU2026') {
+                        setIsTeacher(true);
+                        setStudentData({ name: 'Guru Nurhayati', role: 'teacher' });
+                        setCurrentView('dashboard');
+                    } else {
+                        showAlert('PIN Salah!', 'warning');
+                    }
+                };
+                return (
+                    <div className="min-h-screen flex items-center justify-center p-6">
+                        <div className="glass-card p-8 rounded-3xl max-w-sm w-full">
+                            <h2 className="text-2xl font-black mb-4">Akses Guru</h2>
+                            <input type="password" placeholder="Masukkan PIN" value={pin} onChange={e=>setPin(e.target.value)} className="w-full p-3 rounded-xl border-2 mb-4 text-center text-xl tracking-widest" />
+                            <Button onClick={handleLogin} variant="primary" className="w-full">MASUK</Button>
+                            <button onClick={() => setCurrentView('home')} className="w-full text-center text-slate-500 font-bold mt-4">Batal</button>
+                        </div>
+                    </div>
+                );
+            };
+
+            const MapView = () => {
+                const levels = [
+                    { id: 'level1', title: '1. Pengenalan', desc: 'Mengenal Segitiga Siku-Siku', color: 'bg-sky-400', icon: 'search', unlock: true },
+                    { id: 'level2', title: '2. Konsep', desc: 'Memahami Teorema', color: 'bg-indigo-400', icon: 'book-open', unlock: progress.level1 },
+                    { id: 'level3', title: '3. Simulasi', desc: 'Menghitung Sisi', color: 'bg-emerald-400', icon: 'calculator', unlock: progress.level2 },
+                    { id: 'level4', title: '4. Tripel', desc: 'Tripel Pythagoras', color: 'bg-amber-400', icon: 'layers', unlock: progress.level3 },
+                    { id: 'level5', title: '5. Aplikasi', desc: 'Dalam Kehidupan', color: 'bg-rose-400', icon: 'globe', unlock: progress.level4 },
+                    { id: 'level6', title: '6. Tantangan', desc: 'Kuis & LKPD', color: 'bg-fuchsia-500', icon: 'award', unlock: progress.level5 },
+                ];
+
+                const totalProgress = Object.keys(progress).filter(k => k.startsWith('level') && progress[k]).length;
+                const percent = Math.round((totalProgress / 6) * 100);
+                const canGetCert = progress.level6 && progress.lkpd && progress.reflection && progress.quizScore !== null;
+                const activeLevelIndex = levels.findIndex(l => l.unlock && !progress[l.id]);
+
+                return (
+                    <div className="min-h-screen pb-20 relative">
+                        {/* Overlay Animasi Titik Peta Bergerak */}
+                        <div className="absolute inset-0 z-0 opacity-30 pointer-events-none" style={{
+                            backgroundImage: 'radial-gradient(circle at center, #0ea5e9 3px, transparent 3px)',
+                            backgroundSize: '40px 40px',
+                            animation: 'scrollPattern 15s linear infinite'
+                        }}></div>
+
+                        <div className="bg-edu-blue/80 backdrop-blur-md p-6 text-white rounded-b-[3rem] shadow-xl relative overflow-hidden z-10 border-b-4 border-white/30">
+                            <div className="absolute top-0 right-0 opacity-20 transform translate-x-10 -translate-y-10"><Mascot size="w-64 h-64" expression="happy" /></div>
+                            <div className="relative z-10">
+                                <h1 className="text-3xl font-black mb-2">Peta Petualangan</h1>
+                                <p className="font-bold opacity-90 text-lg">Halo, {studentData?.name}! Siap belajar?</p>
+                                <div className="mt-4 bg-white/20 p-4 rounded-2xl backdrop-blur-sm border border-white/20">
+                                    <div className="flex justify-between font-bold mb-1 text-sm">
+                                        <span>Progres Total</span>
+                                        <span>{percent}%</span>
+                                    </div>
+                                    <div className="w-full bg-black/20 rounded-full h-3">
+                                        <div className="bg-edu-yellow h-3 rounded-full transition-all duration-1000 shadow-inner" style={{ width: `${percent}%` }}></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="p-6 max-w-3xl mx-auto space-y-6 mt-4 relative z-10">
+                            {levels.map((lvl, idx) => {
+                                const isActive = idx === activeLevelIndex;
+                                return (
+                                <div 
+                                    key={lvl.id} 
+                                    className="animate-slide-up"
+                                    style={{ animationDelay: `${idx * 0.15}s` }}
+                                >
+                                    <div className={`relative flex items-center p-4 rounded-3xl border-4 transition-all duration-500 ${lvl.unlock ? 'bg-white shadow-lg ' + (isActive ? 'border-sky-400 shadow-sky-200/50 animate-float ring-4 ring-sky-100 ring-offset-2' : 'border-white') : 'bg-slate-200 border-slate-300 opacity-70 grayscale'}`}>
+                                        <div className={`w-16 h-16 rounded-full flex items-center justify-center text-white ${lvl.unlock ? lvl.color : 'bg-slate-400'} shadow-inner flex-shrink-0 z-10 ${isActive ? 'animate-wiggle' : ''}`}>
+                                            <Icon name={lvl.icon} size={32} />
+                                        </div>
+                                        <div className="ml-4 flex-1">
+                                            <h3 className="text-xl font-black text-slate-800">{lvl.title}</h3>
+                                            <p className="text-slate-600 font-bold">{lvl.desc}</p>
+                                        </div>
+                                        {lvl.unlock ? (
+                                            <button 
+                                                onClick={() => setCurrentView(lvl.id)}
+                                                className={`px-4 py-2 rounded-full font-bold text-white shadow-md transform hover:scale-105 transition ${progress[lvl.id] ? 'bg-green-500' : 'bg-edu-blue animate-pulse-fast'}`}
+                                            >
+                                                {progress[lvl.id] ? 'ULANGI' : 'MASUK'}
+                                            </button>
+                                        ) : (
+                                            <Icon name="lock" className="text-slate-400 mr-2" />
+                                        )}
+                                        
+                                        {/* Animated Connecting Line */}
+                                        {idx !== levels.length - 1 && (
+                                            <div 
+                                                className="absolute left-[3.25rem] top-full w-2 h-10 -z-10 opacity-60 rounded-full"
+                                                style={{ 
+                                                    backgroundImage: 'linear-gradient(to bottom, #38bdf8 50%, transparent 50%)', 
+                                                    backgroundSize: '100% 15px', 
+                                                    animation: 'flowDash 1s linear infinite' 
+                                                }}
+                                            ></div>
+                                        )}
+                                    </div>
+                                </div>
+                            )})}
+
+                            {canGetCert && (
+                                <div className="mt-8 flex justify-center">
+                                    <Button onClick={() => setCurrentView('certificate')} variant="warning" icon="award" className="animate-bounce-slow text-xl px-8 py-4">
+                                        AMBIL SERTIFIKAT!
+                                    </Button>
+                                </div>
+                            )}
+                            
+                            <div className="mt-8 flex justify-center pb-8">
+                                <button onClick={handleLogout} className="text-slate-400 font-bold flex items-center gap-2 hover:text-red-500"><Icon name="log-out" size={16}/> Keluar / Ganti Akun</button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
+
+            const Level1 = () => (
+                <div className="min-h-screen pb-20 relative">
+                    <DancingShapes />
+                    <TopNav title="1. Mengenal Segitiga Siku-Siku" />
+                    <div className="p-6 max-w-2xl mx-auto relative z-10">
+                        <div className="glass-card p-6 rounded-3xl mb-6 bg-sky-50">
+                            <Mascot size="w-24 h-24" />
+                            <p className="text-lg font-bold text-slate-700 mt-4 text-center">
+                                Segitiga siku-siku adalah segitiga yang salah satu sudutnya besarnya tepat 90 derajat!
+                            </p>
+                        </div>
+                        
+                        <div className="space-y-6">
+                            <div className="bg-white p-6 rounded-3xl shadow-md border-2 border-slate-100 flex flex-col items-center">
+                                <svg width="200" height="200" viewBox="0 0 200 200">
+                                    {/* Grid background */}
+                                    <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                                        <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#f1f5f9" strokeWidth="1"/>
+                                    </pattern>
+                                    <rect width="200" height="200" fill="url(#grid)" />
+                                    
+                                    {/* Triangle */}
+                                    <polygon points="40,160 160,160 40,40" fill="#bae6fd" stroke="#0ea5e9" strokeWidth="4" strokeLinejoin="round"/>
+                                    
+                                    {/* Right Angle Symbol */}
+                                    <polyline points="40,140 60,140 60,160" fill="none" stroke="#ef4444" strokeWidth="3"/>
+                                    
+                                    {/* Labels */}
+                                    <text x="100" y="180" fontSize="16" fontWeight="bold" fill="#334155" textAnchor="middle">Alas (a)</text>
+                                    <text x="20" y="100" fontSize="16" fontWeight="bold" fill="#334155" textAnchor="middle" transform="rotate(-90 20,100)">Tinggi (b)</text>
+                                    <text x="110" y="90" fontSize="16" fontWeight="bold" fill="#a855f7" textAnchor="middle" transform="rotate(45 110,90)">Hipotenusa (c)</text>
+                                </svg>
+                            </div>
+                            
+                            <div className="bg-white p-6 rounded-3xl shadow-md border-2 border-slate-100">
+                                <h3 className="text-xl font-black text-edu-dark mb-4">Ciri-Ciri Utama:</h3>
+                                <ul className="space-y-3 font-bold text-slate-600">
+                                    <li className="flex items-center gap-3"><Icon name="check-circle" className="text-edu-mint"/> Memiliki satu sudut tepat 90° (siku-siku).</li>
+                                    <li className="flex items-center gap-3"><Icon name="check-circle" className="text-edu-mint"/> Sisi di depan sudut siku-siku adalah sisi terpanjang (Hipotenusa).</li>
+                                    <li className="flex items-center gap-3"><Icon name="check-circle" className="text-edu-mint"/> Dua sisi lainnya disebut sisi tegak (alas dan tinggi).</li>
+                                </ul>
+                            </div>
+
+                            <Button onClick={() => completeLevel('level1')} className="w-full" icon="star">Saya Paham, Lanjut!</Button>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const Level2 = () => (
+                <div className="min-h-screen pb-20 relative">
+                    <DancingShapes />
+                    <TopNav title="2. Teorema Pythagoras" />
+                    <div className="p-6 max-w-2xl mx-auto space-y-6 relative z-10">
+                        <div className="glass-card p-6 rounded-3xl bg-indigo-50 flex gap-4 items-center">
+                            <Mascot size="w-20 h-20" expression="thinking" />
+                            <p className="text-lg font-bold text-slate-700">
+                                Pythagoras dari Samos (570-495 SM) adalah seorang filsuf Yunani yang membuktikan sebuah rahasia besar tentang segitiga siku-siku!
+                            </p>
+                        </div>
+
+                        <div className="bg-white p-6 rounded-3xl shadow-md border-2 border-slate-100 text-center">
+                            <h2 className="text-2xl font-black text-edu-purple mb-4">Rumus Sakti!</h2>
+                            <div className="bg-slate-800 text-edu-yellow p-4 rounded-xl text-3xl font-black mb-4 font-mono shadow-inner">
+                                a² + b² = c²
+                            </div>
+                            <p className="font-bold text-slate-600 mb-6">
+                                "Kuadrat panjang sisi miring (hipotenusa) sama dengan jumlah kuadrat panjang sisi-sisi tegaknya."
+                            </p>
+
+                            <div className="flex justify-center mb-6">
+                                <svg width="250" height="250" viewBox="-50 -50 250 250">
+                                    {/* Squares on sides */}
+                                    <rect x="50" y="100" width="100" height="100" fill="#fde047" opacity="0.7" stroke="#ca8a04" strokeWidth="2"/> {/* b^2 */}
+                                    <text x="100" y="150" fontWeight="bold">b² = 16</text>
+                                    
+                                    <rect x="-25" y="25" width="75" height="75" fill="#38bdf8" opacity="0.7" stroke="#0284c7" strokeWidth="2"/> {/* a^2 */}
+                                    <text x="12.5" y="62.5" fontWeight="bold">a²=9</text>
+                                    
+                                    <g transform="translate(50,25) rotate(36.87)">
+                                        <rect x="0" y="-125" width="125" height="125" fill="#a855f7" opacity="0.7" stroke="#7e22ce" strokeWidth="2"/> {/* c^2 */}
+                                        <text x="62.5" y="-62.5" fontWeight="bold">c² = 25</text>
+                                    </g>
+
+                                    {/* Triangle */}
+                                    <polygon points="50,100 150,100 50,25" fill="white" stroke="#1e293b" strokeWidth="3"/>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div className="bg-white p-6 rounded-3xl shadow-md border-2 border-slate-100">
+                            <h3 className="text-xl font-black text-edu-dark mb-4">Turunan Rumus:</h3>
+                            <div className="space-y-4 font-bold text-slate-700 text-lg">
+                                <div className="bg-sky-50 p-3 rounded-lg border border-sky-100">Mencari Sisi Miring (c) ➔ <span className="text-sky-600">c² = a² + b²</span></div>
+                                <div className="bg-emerald-50 p-3 rounded-lg border border-emerald-100">Mencari Alas (a) ➔ <span className="text-emerald-600">a² = c² - b²</span></div>
+                                <div className="bg-amber-50 p-3 rounded-lg border border-amber-100">Mencari Tinggi (b) ➔ <span className="text-amber-600">b² = c² - a²</span></div>
+                            </div>
+                        </div>
+
+                        <Button onClick={() => completeLevel('level2')} className="w-full" icon="star">Sip, Aku Mengerti!</Button>
+                    </div>
+                </div>
+            );
+
+            const Level3 = () => {
+                const [a, setA] = useState(3);
+                const [b, setB] = useState(4);
+                
+                const c = useMemo(() => Math.sqrt(a*a + b*b).toFixed(1), [a, b]);
+                
+                // SVG scaling logic
+                const scale = 15;
+                const svgA = a * scale;
+                const svgB = b * scale;
+                const maxDim = 15 * scale; // max 15
+                
+                return (
+                    <div className="min-h-screen pb-20 relative">
+                        <DancingShapes />
+                        <TopNav title="3. Simulasi Interaktif" />
+                        <div className="p-6 max-w-2xl mx-auto space-y-6 relative z-10">
+                            <div className="glass-card p-6 rounded-3xl bg-emerald-50">
+                                <h2 className="text-2xl font-black text-emerald-700 mb-2">Lab Pythagoras</h2>
+                                <p className="font-bold text-slate-600">Geser slider untuk mengubah panjang sisi alas (a) dan tinggi (b). Lihat bagaimana sisi miring (c) berubah secara otomatis!</p>
+                            </div>
+
+                            <div className="bg-slate-800 p-6 rounded-3xl text-white shadow-xl relative overflow-hidden flex flex-col items-center justify-center min-h-[300px]">
+                                <svg width={maxDim + 40} height={maxDim + 40} className="transform origin-bottom-left transition-all duration-300">
+                                    {/* Grid */}
+                                    <pattern id="simGrid" width={scale} height={scale} patternUnits="userSpaceOnUse">
+                                        <path d={`M ${scale} 0 L 0 0 0 ${scale}`} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="1"/>
+                                    </pattern>
+                                    <rect width="100%" height="100%" fill="url(#simGrid)" />
+                                    
+                                    <g transform={`translate(20, ${maxDim + 20}) scale(1, -1)`}>
+                                        <polygon points={`0,0 ${svgA},0 0,${svgB}`} fill="#38bdf8" fillOpacity="0.5" stroke="#38bdf8" strokeWidth="3" strokeLinejoin="round" />
+                                        
+                                        {/* Right angle */}
+                                        <polyline points={`0,${Math.min(10, svgB)} ${Math.min(10, svgA)},${Math.min(10, svgB)} ${Math.min(10, svgA)},0`} fill="none" stroke="#fb7185" strokeWidth="2"/>
+                                    </g>
+                                </svg>
+                            </div>
+
+                            <div className="bg-white p-6 rounded-3xl shadow-md border-2 border-slate-100 space-y-6">
+                                <div>
+                                    <label className="flex justify-between font-bold text-slate-700 mb-2">
+                                        <span>Alas (a)</span>
+                                        <span className="text-sky-600 text-xl">{a} cm</span>
+                                    </label>
+                                    <input type="range" min="1" max="15" value={a} onChange={(e) => setA(Number(e.target.value))} className="w-full h-3 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-sky-500" />
+                                </div>
+                                <div>
+                                    <label className="flex justify-between font-bold text-slate-700 mb-2">
+                                        <span>Tinggi (b)</span>
+                                        <span className="text-emerald-600 text-xl">{b} cm</span>
+                                    </label>
+                                    <input type="range" min="1" max="15" value={b} onChange={(e) => setB(Number(e.target.value))} className="w-full h-3 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-500" />
+                                </div>
+                                
+                                <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                                    <h4 className="font-black text-center mb-2">Perhitungan Otomatis:</h4>
+                                    <p className="font-mono text-center text-lg text-slate-700">
+                                        c = &radic;({a}² + {b}²)<br/>
+                                        c = &radic;({a*a} + {b*b})<br/>
+                                        c = &radic;{a*a + b*b}<br/>
+                                        <span className="text-2xl font-black text-purple-600">c ≈ {c} cm</span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <Button onClick={() => completeLevel('level3')} className="w-full" icon="check-circle" variant="success">Saya Sudah Coba, Lanjut!</Button>
+                        </div>
+                    </div>
+                );
+            };
+
+            const Level4 = () => (
+                <div className="min-h-screen pb-20 relative">
+                    <DancingShapes />
+                    <TopNav title="4. Tripel Pythagoras" />
+                    <div className="p-6 max-w-2xl mx-auto space-y-6 relative z-10">
+                        <div className="glass-card p-6 rounded-3xl bg-amber-50">
+                            <h2 className="text-2xl font-black text-amber-700 mb-2">Tiga Sekawan Spesial!</h2>
+                            <p className="font-bold text-slate-700">
+                                Tripel Pythagoras adalah kelompok tiga bilangan bulat positif yang memenuhi kuadrat bilangan terbesar sama dengan jumlah kuadrat dua bilangan lainnya.
+                            </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {[
+                                { a: 3, b: 4, c: 5 },
+                                { a: 5, b: 12, c: 13 },
+                                { a: 7, b: 24, c: 25 },
+                                { a: 8, b: 15, c: 17 }
+                            ].map((tripel, idx) => (
+                                <div key={idx} className="bg-white p-4 rounded-2xl shadow border-2 border-slate-100 flex items-center justify-between hover:-translate-y-1 transition-transform">
+                                    <div className="flex gap-2">
+                                        <span className="w-10 h-10 bg-sky-100 text-sky-700 rounded-full flex items-center justify-center font-black text-lg">{tripel.a}</span>
+                                        <span className="w-10 h-10 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center font-black text-lg">{tripel.b}</span>
+                                        <span className="w-10 h-10 bg-purple-100 text-purple-700 rounded-full flex items-center justify-center font-black text-lg">{tripel.c}</span>
+                                    </div>
+                                    <Icon name="check-circle" className="text-amber-500" />
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="bg-edu-dark text-white p-6 rounded-3xl shadow-md">
+                            <h3 className="text-xl font-black text-edu-yellow mb-2"><Icon name="zap" className="inline mr-2"/>Trik Cepat!</h3>
+                            <p className="font-bold mb-2">Jika kamu mengalikan bilangan Tripel Pythagoras dengan angka yang sama, hasilnya juga Tripel Pythagoras lho!</p>
+                            <p className="text-sm bg-white/10 p-3 rounded-lg">Contoh: (3,4,5) dikali 2 menjadi <strong>(6,8,10)</strong>. Buktikan sendiri!</p>
+                        </div>
+
+                        <Button onClick={() => completeLevel('level4')} className="w-full" icon="star" variant="warning">Mantap, Lanjut!</Button>
+                    </div>
+                </div>
+            );
+
+            const Level5 = () => (
+                <div className="min-h-screen pb-20 relative">
+                    <DancingShapes />
+                    <TopNav title="5. Aplikasi di Dunia Nyata" />
+                    <div className="p-6 max-w-2xl mx-auto space-y-6 relative z-10">
+                        
+                        <div className="glass-card p-6 rounded-3xl bg-rose-50 text-center">
+                            <Mascot size="w-24 h-24" expression="happy" />
+                            <h2 className="text-2xl font-black text-rose-700 mt-4 mb-2">Matematika Ada di Mana-Mana!</h2>
+                            <p className="font-bold text-slate-700">Teorema Pythagoras sangat berguna dalam kehidupan sehari-hari, mulai dari arsitektur hingga navigasi kapal.</p>
+                        </div>
+
+                        {/* Example 1 */}
+                        <div className="bg-white p-6 rounded-3xl shadow-md border-2 border-slate-100">
+                            <h3 className="text-xl font-black text-slate-800 mb-4 flex items-center gap-2"><Icon name="home" className="text-sky-500"/> Kasus 1: Tangga & Tembok</h3>
+                            <div className="flex flex-col md:flex-row gap-6 items-center">
+                                <div className="relative w-48 h-48 bg-sky-50 rounded-2xl border-2 border-sky-100 overflow-hidden flex-shrink-0">
+                                    {/* Wall */}
+                                    <div className="absolute bottom-0 left-10 w-4 h-32 bg-slate-700"></div>
+                                    {/* Ground */}
+                                    <div className="absolute bottom-0 left-0 w-full h-4 bg-green-500"></div>
+                                    {/* Ladder */}
+                                    <div className="absolute bottom-4 left-32 w-2 h-36 bg-amber-600 origin-bottom-left" style={{transform: 'rotate(-25deg)'}}></div>
+                                </div>
+                                <div>
+                                    <p className="font-bold text-slate-600 mb-2">Sebuah tangga disandarkan pada tembok. Jarak ujung bawah tangga ke tembok adalah 3 meter. Tinggi tembok yang dicapai adalah 4 meter. Berapa panjang tangganya?</p>
+                                    <p className="font-mono bg-slate-100 p-3 rounded-lg">c = &radic;(3² + 4²) = &radic;(9 + 16) = &radic;25 = <strong>5 meter</strong></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Example 2 */}
+                        <div className="bg-white p-6 rounded-3xl shadow-md border-2 border-slate-100">
+                            <h3 className="text-xl font-black text-slate-800 mb-4 flex items-center gap-2"><Icon name="navigation" className="text-emerald-500"/> Kasus 2: Navigasi Kapal</h3>
+                            <div className="flex flex-col md:flex-row gap-6 items-center">
+                                <div className="relative w-48 h-48 bg-blue-100 rounded-full border-4 border-blue-200 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                                    <svg width="120" height="120">
+                                        <polyline points="20,100 20,20 100,20" fill="none" stroke="#3b82f6" strokeWidth="4" strokeDasharray="5,5"/>
+                                        <line x1="20" y1="100" x2="100" y2="20" stroke="#ef4444" strokeWidth="4"/>
+                                        <text x="10" y="60" fontWeight="bold" fill="#1d4ed8">Utara</text>
+                                        <text x="60" y="15" fontWeight="bold" fill="#1d4ed8">Timur</text>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p className="font-bold text-slate-600 mb-2">Kapal berlayar ke Utara sejauh 8 km, lalu belok ke Timur sejauh 6 km. Berapa jarak terpendek kapal dari titik awal?</p>
+                                    <p className="font-mono bg-slate-100 p-3 rounded-lg">Jarak = &radic;(8² + 6²) = &radic;(64 + 36) = &radic;100 = <strong>10 km</strong></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <Button onClick={() => completeLevel('level5')} className="w-full" icon="star" variant="accent">Wah, Keren! Lanjut Tantangan!</Button>
+                    </div>
+                </div>
+            );
+
+            const Level6Hub = () => {
+                const acts = [
+                    { id: 'lkpd', title: 'LKPD Digital', icon: 'file-text', color: 'text-blue-500', bg: 'bg-blue-50', done: progress.lkpd !== null },
+                    { id: 'quiz', title: 'Kuis Evaluasi', icon: 'award', color: 'text-amber-500', bg: 'bg-amber-50', done: progress.quizScore !== null },
+                    { id: 'reflection', title: 'Refleksi Diri', icon: 'smile', color: 'text-purple-500', bg: 'bg-purple-50', done: progress.reflection !== null }
+                ];
+
+                const allDone = acts.every(a => a.done);
+
+                return (
+                    <div className="min-h-screen pb-20 relative">
+                        <DancingShapes />
+                        <TopNav title="6. Tantangan Akhir" />
+                        <div className="p-6 max-w-2xl mx-auto text-center space-y-6 relative z-10">
+                            <Mascot size="w-32 h-32" expression="happy" />
+                            <h2 className="text-3xl font-black text-slate-800">Ruang Ujian Pahlawan</h2>
+                            <p className="font-bold text-slate-600">Selesaikan ketiga misi di bawah ini untuk membuka Sertifikat Digital-mu!</p>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+                                {acts.map(act => (
+                                    <button 
+                                        key={act.id}
+                                        onClick={() => setCurrentView(act.id)}
+                                        className={`btn-game flex items-center justify-between p-6 rounded-2xl border-4 ${act.done ? 'border-green-400 bg-green-50' : `border-slate-200 ${act.bg}`}`}
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            <Icon name={act.icon} size={32} className={act.color} />
+                                            <span className="font-black text-lg text-slate-700">{act.title}</span>
+                                        </div>
+                                        {act.done && <Icon name="check-circle" className="text-green-500" size={28}/>}
+                                    </button>
+                                ))}
+                            </div>
+
+                            {allDone && (
+                                <div className="mt-8 animate-bounce-slow">
+                                    <Button onClick={() => completeLevel('level6')} className="w-full text-xl py-4" variant="primary" icon="unlock">
+                                        SELESAIKAN LEVEL 6 & AMBIL SERTIFIKAT!
+                                    </Button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                );
+            };
+
+            const LKPDView = () => {
+                const [answers, setAnswers] = useState(progress.lkpd || { q1: '', q2: '', q3: '' });
+
+                const handleSave = () => {
+                    if(!answers.q1 || !answers.q2 || !answers.q3) {
+                        showAlert("Harap isi semua kolom jawaban!", "warning");
+                        return;
+                    }
+                    const newProgress = { ...progress, lkpd: answers };
+                    saveData(null, newProgress);
+                    showAlert('Jawaban LKPD berhasil disimpan!', 'success');
+                    setCurrentView('level6');
+                };
+
+                return (
+                    <div className="min-h-screen pb-20 relative">
+                        <DancingShapes />
+                        <TopNav title="LKPD Digital" showBack={false} />
+                        <div className="p-6 max-w-3xl mx-auto space-y-6 relative z-10">
+                            <button onClick={() => setCurrentView('level6')} className="text-slate-500 font-bold flex items-center gap-2 mb-4 hover:text-edu-blue"><Icon name="arrow-left"/> Kembali ke Tantangan</button>
+                            
+                            <div className="text-center mb-8">
+                                <h2 className="text-3xl font-black text-edu-blue">LKPD: Rahasia Pythagoras</h2>
+                                <p className="font-bold text-slate-500 mt-2">Kerjakan aktivitas di bawah ini untuk membuktikan pemahamanmu.</p>
+                            </div>
+
+                            <div className="bg-sky-50 p-6 rounded-3xl border-2 border-sky-100">
+                                <h3 className="font-black text-lg mb-2">Aktivitas 1: Identifikasi</h3>
+                                <p className="font-bold text-slate-700 mb-3">Apa yang membedakan segitiga siku-siku dengan segitiga lainnya secara spesifik?</p>
+                                <textarea 
+                                    className="w-full p-4 rounded-xl border-2 border-slate-200 focus:border-edu-blue outline-none resize-none" 
+                                    rows="3" 
+                                    placeholder="Ketik jawabanmu di sini..."
+                                    value={answers.q1}
+                                    onChange={e => setAnswers({...answers, q1: e.target.value})}
+                                ></textarea>
+                            </div>
+
+                            <div className="bg-emerald-50 p-6 rounded-3xl border-2 border-emerald-100">
+                                <h3 className="font-black text-lg mb-2">Aktivitas 2: Pemecahan Masalah</h3>
+                                <p className="font-bold text-slate-700 mb-3">Jika panjang alas = 5 cm dan tinggi = 12 cm, buktikan dengan rumus Pythagoras bahwa sisi miringnya adalah 13 cm!</p>
+                                <textarea 
+                                    className="w-full p-4 rounded-xl border-2 border-slate-200 focus:border-emerald-400 outline-none resize-none font-mono" 
+                                    rows="3" 
+                                    placeholder="Tuliskan langkah-langkahnya..."
+                                    value={answers.q2}
+                                    onChange={e => setAnswers({...answers, q2: e.target.value})}
+                                ></textarea>
+                            </div>
+
+                            <div className="bg-amber-50 p-6 rounded-3xl border-2 border-amber-100">
+                                <h3 className="font-black text-lg mb-2">Aktivitas 3: Analisis Kontekstual</h3>
+                                <p className="font-bold text-slate-700 mb-3">Berikan satu contoh penerapan Teorema Pythagoras di lingkungan sekolah atau rumahmu, dan jelaskan!</p>
+                                <textarea 
+                                    className="w-full p-4 rounded-xl border-2 border-slate-200 focus:border-amber-400 outline-none resize-none" 
+                                    rows="3" 
+                                    placeholder="Ceritakan contohmu..."
+                                    value={answers.q3}
+                                    onChange={e => setAnswers({...answers, q3: e.target.value})}
+                                ></textarea>
+                            </div>
+
+                            <Button onClick={handleSave} className="w-full" icon="save" variant="primary">SIMPAN JAWABAN</Button>
+                        </div>
+                    </div>
+                );
+            };
+
+            const QuizView = () => {
+                const [questions, setQuestions] = useState([]);
+                const [currentQ, setCurrentQ] = useState(0);
+                const [selectedAnswers, setSelectedAnswers] = useState({});
+                const [timeLeft, setTimeLeft] = useState(1200); // 20 mins
+                const [isFinished, setIsFinished] = useState(false);
+                const [scoreData, setScoreData] = useState(null);
+
+                // Initialize random questions on load
+                useEffect(() => {
+                    const shuffled = [...QUIZ_BANK].sort(() => 0.5 - Math.random()).slice(0, 10);
+                    setQuestions(shuffled);
+                }, []);
+
+                // Timer logic
+                useEffect(() => {
+                    if (timeLeft > 0 && !isFinished && questions.length > 0) {
+                        const timerId = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+                        return () => clearTimeout(timerId);
+                    } else if (timeLeft === 0 && !isFinished) {
+                        finishQuiz();
+                    }
+                }, [timeLeft, isFinished, questions]);
+
+                const formatTime = (sec) => {
+                    const m = Math.floor(sec / 60);
+                    const s = sec % 60;
+                    return `${m}:${s < 10 ? '0' : ''}${s}`;
+                };
+
+                const handleSelect = (ansIdx) => {
+                    setSelectedAnswers({ ...selectedAnswers, [currentQ]: ansIdx });
+                };
+
+                const finishQuiz = () => {
+                    let correct = 0;
+                    questions.forEach((q, idx) => {
+                        if (selectedAnswers[idx] === q.a) correct++;
+                    });
+                    const score = Math.round((correct / questions.length) * 100);
+                    
+                    let predikat = "Jangan Menyerah, Coba Lagi!";
+                    if (score >= 90) predikat = "Sangat Hebat!";
+                    else if (score >= 80) predikat = "Luar Biasa!";
+                    else if (score >= 70) predikat = "Bagus!";
+                    else if (score >= 60) predikat = "Terus Berlatih!";
+
+                    const result = { correct, wrong: questions.length - correct, score, predikat };
+                    setScoreData(result);
+                    setIsFinished(true);
+
+                    // Memicu animasi sukses jika nilai di atas 70
+                    // Penyimpanan data ditunda ke fungsi handleCloseResult agar halaman tidak re-render sebelum menampilkan skor
+                    if (score >= 70) triggerConfetti();
+                };
+
+                const handleCloseResult = () => {
+                    // Simpan data ke progress
+                    const newProgress = { ...progress, quizScore: scoreData.score, quizDetail: scoreData };
+                    saveData(null, newProgress);
+                    setCurrentView('level6');
+                };
+
+                if (questions.length === 0) return <div>Loading...</div>;
+
+                if (isFinished) {
+                    return (
+                        <div className="min-h-screen pb-20 pt-10 flex flex-col items-center relative">
+                            <DancingShapes />
+                            <div className="glass-card p-8 rounded-3xl max-w-lg w-full text-center space-y-6 relative z-10">
+                                <Mascot size="w-32 h-32" expression={scoreData.score >= 70 ? 'happy' : 'thinking'} />
+                                <h2 className="text-3xl font-black text-edu-dark">Hasil Kuis</h2>
+                                
+                                <div className="bg-slate-100 p-6 rounded-2xl">
+                                    <div className="text-6xl font-black text-edu-blue mb-2">{scoreData.score}</div>
+                                    <div className="text-xl font-bold text-slate-700">{scoreData.predikat}</div>
+                                </div>
+                                
+                                <div className="flex justify-around font-bold text-lg">
+                                    <div className="text-emerald-600"><Icon name="check-circle" className="inline mr-1"/> {scoreData.correct} Benar</div>
+                                    <div className="text-red-500"><Icon name="x-circle" className="inline mr-1"/> {scoreData.wrong} Salah</div>
+                                </div>
+
+                                <div className="pt-4 flex flex-col gap-3">
+                                    <Button onClick={handleCloseResult} variant="success" className="w-full">Selesai & Kembali</Button>
+                                    <button onClick={() => {setIsFinished(false); setSelectedAnswers({}); setTimeLeft(1200); setCurrentQ(0);}} className="font-bold text-slate-500 underline">Ulangi Kuis</button>
+                                </div>
+                            </div>
+                        </div>
+                    );
+                }
+
+                const q = questions[currentQ];
+
+                return (
+                    <div className="min-h-screen pb-20 relative">
+                        <DancingShapes />
+                        <div className="glass-card bg-white/40 p-4 shadow-sm sticky top-0 z-50 flex justify-between items-center border-b-2 border-white/60">
+                            <div className="font-black text-slate-700">Soal {currentQ + 1} / {questions.length}</div>
+                            <div className={`font-black flex items-center gap-2 px-4 py-2 rounded-full ${timeLeft < 300 ? 'bg-red-100 text-red-600 animate-pulse' : 'bg-sky-100 text-sky-700'}`}>
+                                <Icon name="clock" size={20} /> {formatTime(timeLeft)}
+                            </div>
+                        </div>
+
+                        <div className="p-6 max-w-3xl mx-auto mt-4 relative z-10">
+                            {/* Question Nav */}
+                            <div className="flex flex-wrap gap-2 mb-8 justify-center">
+                                {questions.map((_, idx) => (
+                                    <button 
+                                        key={idx} 
+                                        onClick={() => setCurrentQ(idx)}
+                                        className={`w-10 h-10 rounded-lg font-bold flex items-center justify-center border-2 transition-all ${
+                                            currentQ === idx ? 'border-edu-blue bg-edu-blue text-white scale-110' : 
+                                            selectedAnswers[idx] !== undefined ? 'bg-emerald-100 border-emerald-400 text-emerald-800' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-100'
+                                        }`}
+                                    >
+                                        {idx + 1}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <div className="bg-white p-8 rounded-3xl shadow-md border-2 border-slate-100 mb-6">
+                                <h3 className="text-xl font-bold text-slate-800 mb-6 leading-relaxed">{q.q}</h3>
+                                <div className="space-y-3">
+                                    {q.options.map((opt, idx) => (
+                                        <button 
+                                            key={idx}
+                                            onClick={() => handleSelect(idx)}
+                                            className={`w-full text-left p-4 rounded-xl font-bold border-2 transition-all ${
+                                                selectedAnswers[currentQ] === idx 
+                                                ? 'border-edu-blue bg-sky-50 text-edu-blue' 
+                                                : 'border-slate-200 bg-white hover:border-sky-300 text-slate-700 hover:bg-slate-50'
+                                            }`}
+                                        >
+                                            <span className="inline-block w-8 font-black text-slate-400">{String.fromCharCode(65 + idx)}.</span> {opt}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="flex justify-between items-center">
+                                <Button 
+                                    onClick={() => setCurrentQ(Math.max(0, currentQ - 1))} 
+                                    variant="secondary" 
+                                    className={`${currentQ === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                >
+                                    <Icon name="chevron-left" /> Sebelumnya
+                                </Button>
+                                
+                                {currentQ === questions.length - 1 ? (
+                                    <Button onClick={finishQuiz} variant="accent">
+                                        SELESAI KUIS <Icon name="check" />
+                                    </Button>
+                                ) : (
+                                    <Button onClick={() => setCurrentQ(Math.min(questions.length - 1, currentQ + 1))} variant="primary">
+                                        Selanjutnya <Icon name="chevron-right" />
+                                    </Button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
+
+            const ReflectionView = () => {
+                const [emoji, setEmoji] = useState(progress.reflection?.emoji || '');
+                const [text, setText] = useState(progress.reflection?.text || '');
+
+                const handleSave = () => {
+                    if(!emoji || !text) {
+                        showAlert("Pilih perasaanmu dan isi refleksinya ya!", "warning");
+                        return;
+                    }
+                    const newProgress = { ...progress, reflection: { emoji, text } };
+                    saveData(null, newProgress);
+                    showAlert('Refleksi tersimpan! Terima kasih.', 'success');
+                    setCurrentView('level6');
+                };
+
+                const emojis = [
+                    { id: '😍', label: 'Sangat Senang' },
+                    { id: '😊', label: 'Senang' },
+                    { id: '😐', label: 'Biasa Saja' },
+                    { id: '😟', label: 'Masih Bingung' }
+                ];
+
+                return (
+                    <div className="min-h-screen pb-20 relative">
+                        <DancingShapes />
+                        <TopNav title="Refleksi Diri" showBack={false} />
+                        <div className="p-6 max-w-2xl mx-auto space-y-6 text-center relative z-10">
+                            <button onClick={() => setCurrentView('level6')} className="text-slate-500 font-bold flex items-center gap-2 mb-4 hover:text-edu-blue mx-auto"><Icon name="arrow-left"/> Kembali</button>
+
+                            <Mascot size="w-24 h-24" expression="happy" />
+                            <h2 className="text-2xl font-black text-slate-800">Bagaimana Perasaanmu Hari Ini?</h2>
+                            
+                            <div className="flex justify-center gap-4 py-4">
+                                {emojis.map(e => (
+                                    <button 
+                                        key={e.id}
+                                        onClick={() => setEmoji(e.id)}
+                                        className={`flex flex-col items-center p-4 rounded-2xl transition-all ${emoji === e.id ? 'bg-sky-100 border-2 border-edu-blue scale-110 shadow-md' : 'bg-slate-50 border-2 border-transparent grayscale hover:grayscale-0'}`}
+                                    >
+                                        <span className="text-4xl mb-2">{e.id}</span>
+                                        <span className="text-xs font-bold text-slate-600">{e.label}</span>
+                                    </button>
+                                ))}
+                            </div>
+
+                            <div className="text-left mt-6">
+                                <label className="block font-bold text-slate-700 mb-2">Apa hal baru yang paling menarik atau yang masih membingungkan bagimu?</label>
+                                <textarea 
+                                    className="w-full p-4 rounded-xl border-2 border-slate-200 focus:border-edu-purple outline-none resize-none min-h-[150px]"
+                                    placeholder="Tuliskan pengalaman belajarmu di sini..."
+                                    value={text}
+                                    onChange={e => setText(e.target.value)}
+                                ></textarea>
+                            </div>
+
+                            <Button onClick={handleSave} className="w-full" icon="heart" variant="secondary">Kirim Refleksi</Button>
+                        </div>
+                    </div>
+                );
+            };
+
+            const CertificateView = () => {
+                const certRef = useRef();
+
+                const downloadPDF = () => {
+                    const element = certRef.current;
+                    const studentName = studentData?.name || 'Siswa';
+                    const opt = {
+                        margin:       0,
+                        filename:     `Sertifikat_Pythagoras_${studentName.replace(/\s+/g, '_')}.pdf`,
+                        image:        { type: 'jpeg', quality: 0.98 },
+                        html2canvas:  { scale: 2, useCORS: true },
+                        jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
+                    };
+                    html2pdf().set(opt).from(element).save();
+                };
+
+                const dateStr = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+
+                return (
+                    <div className="bg-slate-800 min-h-screen p-6 flex flex-col items-center overflow-x-hidden">
+                        <div className="w-full max-w-4xl flex justify-between mb-6">
+                            <button onClick={() => setCurrentView('map')} className="text-white font-bold flex items-center gap-2 hover:text-sky-400"><Icon name="arrow-left"/> Peta</button>
+                            <Button onClick={downloadPDF} icon="download" variant="warning">Download PDF</Button>
+                        </div>
+
+                        {/* Certificate Element to Print */}
+                        <div className="bg-white relative shadow-2xl w-full max-w-[1123px] aspect-[1.414/1] flex flex-col justify-center items-center p-12 overflow-hidden border-8 border-double border-edu-blue" ref={certRef} style={{minWidth: '800px', margin: '0 auto'}}>
+                            {/* Decorative Elements */}
+                            <div className="absolute top-0 left-0 w-64 h-64 bg-edu-yellow rounded-br-full opacity-30 mix-blend-multiply"></div>
+                            <div className="absolute bottom-0 right-0 w-80 h-80 bg-edu-blue rounded-tl-full opacity-30 mix-blend-multiply"></div>
+                            <div className="absolute top-10 right-10"><Mascot size="w-24 h-24" /></div>
+                            
+                            {/* Content */}
+                            <div className="text-center z-10 w-full relative">
+                                <h1 className="text-5xl font-black text-edu-dark tracking-wider mb-2 uppercase" style={{fontFamily: 'serif'}}>Sertifikat Penghargaan</h1>
+                                <p className="text-xl font-bold text-slate-500 tracking-widest uppercase mb-10">Pythagoras Adventure Master</p>
+                                
+                                <p className="text-lg text-slate-600 italic mb-4">Diberikan dengan bangga kepada:</p>
+                                <h2 className="text-4xl font-black text-edu-blue mb-2 underline decoration-edu-yellow decoration-4 underline-offset-8">{studentData?.name ? studentData.name.toUpperCase() : 'NAMA SISWA'}</h2>
+                                <p className="text-xl font-bold text-slate-700 mb-8">Kelas: {studentData?.class || '-'}</p>
+                                
+                                <p className="text-lg text-slate-700 max-w-2xl mx-auto leading-relaxed mb-8">
+                                    Telah berhasil menyelesaikan seluruh misi pembelajaran interaktif pada materi <strong className="text-edu-purple">Teorema Pythagoras</strong> dengan Predikat <strong>"{progress.quizDetail?.predikat || '-'}"</strong> (Nilai: {progress.quizScore}).
+                                </p>
+                                
+                                <div className="flex justify-between items-end w-full px-20 mt-12">
+                                    <div className="text-center">
+                                        <div className="w-32 border-b-2 border-slate-800 mb-2"></div>
+                                        <p className="font-bold text-slate-800">Siswa Hebat</p>
+                                    </div>
+                                    
+                                    <div className="flex flex-col items-center">
+                                        <div className="w-24 h-24 bg-edu-yellow rounded-full flex items-center justify-center border-4 border-white shadow-lg relative -top-6">
+                                            <Icon name="award" size={48} className="text-amber-600" />
+                                        </div>
+                                    </div>
+
+                                    <div className="text-center">
+                                        <p className="italic text-slate-600 mb-4">Pohuwato, {dateStr}</p>
+                                        <div className="w-48 border-b-2 border-slate-800 mb-2 mt-8"></div>
+                                        <p className="font-bold text-slate-800">Nurhayati Lamasika, S.Pd.</p>
+                                        <p className="text-sm text-slate-500">Guru Matematika MTsN 2 Pohuwato</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
+
+            const DashboardView = () => {
+                const [students, setStudents] = useState([]);
+                const [loading, setLoading] = useState(true);
+
+                useEffect(() => {
+                    if (db) {
+                        const q = collection(db, 'artifacts', appId, 'public', 'data', 'students');
+                        const unsub = onSnapshot(q, (snap) => {
+                            const data = [];
+                            snap.forEach(doc => {
+                                const d = doc.data();
+                                if(d.profile?.role === 'student') data.push({id: doc.id, ...d});
+                            });
+                            setStudents(data);
+                            setLoading(false);
+                        }, (err) => {
+                            console.error("Dashboard error:", err);
+                            setLoading(false);
+                            // Fallback mock data if error
+                            const local = localStorage.getItem('pythagoras_data');
+                            if(local) {
+                                const parsed = JSON.parse(local);
+                                if(parsed.profile?.role === 'student') {
+                                    setStudents([{id: 'local', ...parsed}]);
+                                }
+                            }
+                        });
+                        return () => unsub();
+                    } else {
+                        // Offline mock
+                        setLoading(false);
+                    }
+                }, []);
+
+                const exportCSV = () => {
+                    const headers = ["Nama", "Kelas", "Absen", "Progres(%)", "Nilai Kuis", "Status Lulus"];
+                    const rows = students.map(s => {
+                        const progKeys = Object.keys(s.progress || {}).filter(k => k.startsWith('level') && s.progress[k]);
+                        const percent = Math.round((progKeys.length / 6) * 100);
+                        const isDone = s.progress?.level6 && s.progress?.lkpd && s.progress?.reflection && s.progress?.quizScore !== null;
+                        return [
+                            `"${s.profile?.name}"`,
+                            `"${s.profile?.class}"`,
+                            `"${s.profile?.absent}"`,
+                            percent,
+                            s.progress?.quizScore || 0,
+                            isDone ? "Lulus" : "Belum"
+                        ].join(",");
+                    });
+                    
+                    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows].join("\n");
+                    const encodedUri = encodeURI(csvContent);
+                    const link = document.createElement("a");
+                    link.setAttribute("href", encodedUri);
+                    link.setAttribute("download", "Rekap_Nilai_Pythagoras.csv");
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                };
+
+                const finishedCount = students.filter(s => s.progress?.level6 && s.progress?.quizScore !== null).length;
+                const avgScore = students.length ? Math.round(students.reduce((acc, s) => acc + (s.progress?.quizScore || 0), 0) / students.length) : 0;
+
+                return (
+                    <div className="bg-slate-50 min-h-screen font-sans">
+                        <div className="bg-edu-dark text-white p-6 sticky top-0 z-50 flex justify-between items-center shadow-md">
+                            <h1 className="text-2xl font-black flex items-center gap-2"><Icon name="monitor"/> Dashboard Guru</h1>
+                            <button onClick={handleLogout} className="text-red-400 hover:text-red-300 font-bold flex items-center gap-2"><Icon name="log-out"/> Keluar</button>
+                        </div>
+
+                        <div className="p-6 max-w-6xl mx-auto space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div className="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-edu-blue">
+                                    <p className="text-slate-500 font-bold text-sm">Total Siswa Terdaftar</p>
+                                    <p className="text-3xl font-black text-slate-800">{students.length}</p>
+                                </div>
+                                <div className="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-emerald-500">
+                                    <p className="text-slate-500 font-bold text-sm">Selesai Belajar</p>
+                                    <p className="text-3xl font-black text-emerald-600">{finishedCount}</p>
+                                </div>
+                                <div className="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-edu-purple">
+                                    <p className="text-slate-500 font-bold text-sm">Rata-rata Nilai Kuis</p>
+                                    <p className="text-3xl font-black text-purple-600">{avgScore}</p>
+                                </div>
+                            </div>
+
+                            <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                                <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                                    <h2 className="font-black text-slate-700 text-lg">Rekapitulasi Siswa</h2>
+                                    <Button onClick={exportCSV} variant="success" icon="download" className="!py-2 !text-sm">Export CSV</Button>
+                                </div>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-left border-collapse">
+                                        <thead>
+                                            <tr className="bg-slate-100 text-slate-600 uppercase text-xs">
+                                                <th className="p-4 font-black">Nama / Kelas</th>
+                                                <th className="p-4 font-black">Progres</th>
+                                                <th className="p-4 font-black">Nilai Kuis</th>
+                                                <th className="p-4 font-black">Refleksi</th>
+                                                <th className="p-4 font-black">Aksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-100">
+                                            {loading && <tr><td colSpan="5" className="p-8 text-center text-slate-500">Memuat data...</td></tr>}
+                                            {!loading && students.length === 0 && <tr><td colSpan="5" className="p-8 text-center text-slate-500">Belum ada data siswa.</td></tr>}
+                                            {students.map(s => {
+                                                const progKeys = Object.keys(s.progress || {}).filter(k => k.startsWith('level') && s.progress[k]);
+                                                const percent = Math.round((progKeys.length / 6) * 100);
+                                                const isDone = s.progress?.level6 && s.progress?.lkpd && s.progress?.reflection && s.progress?.quizScore !== null;
+                                                return (
+                                                    <tr key={s.id} className="hover:bg-slate-50 transition-colors">
+                                                        <td className="p-4">
+                                                            <div className="font-bold text-slate-800">{s.profile?.name}</div>
+                                                            <div className="text-sm text-slate-500">{s.profile?.class} - Absen: {s.profile?.absent}</div>
+                                                        </td>
+                                                        <td className="p-4">
+                                                            <div className="flex items-center gap-2">
+                                                                <div className="w-full bg-slate-200 rounded-full h-2 max-w-[100px]">
+                                                                    <div className="bg-edu-blue h-2 rounded-full" style={{width: `${percent}%`}}></div>
+                                                                </div>
+                                                                <span className="text-xs font-bold text-slate-600">{percent}%</span>
+                                                            </div>
+                                                        </td>
+                                                        <td className="p-4">
+                                                            {s.progress?.quizScore !== undefined ? (
+                                                                <span className={`font-black px-3 py-1 rounded-full text-xs ${s.progress.quizScore >= 70 ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
+                                                                    {s.progress.quizScore}
+                                                                </span>
+                                                            ) : <span className="text-slate-400 text-sm">-</span>}
+                                                        </td>
+                                                        <td className="p-4 text-2xl" title={s.progress?.reflection?.text}>
+                                                            {s.progress?.reflection?.emoji || <span className="text-slate-400 text-sm">-</span>}
+                                                        </td>
+                                                        <td className="p-4">
+                                                            {isDone ? <span className="text-emerald-500 flex items-center gap-1 text-sm font-bold"><Icon name="check-circle" size={16}/> Lulus</span> : <span className="text-slate-400 text-sm">Proses</span>}
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            })}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
+
+            // Modal Component
+            const ModalAlert = () => {
+                if (!modal.show) return null;
+                const colors = {
+                    info: 'text-edu-blue',
+                    success: 'text-emerald-500',
+                    warning: 'text-amber-500'
+                };
+                const icons = {
+                    info: 'info',
+                    success: 'check-circle',
+                    warning: 'alert-triangle'
+                };
+                return (
+                    <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+                        <div className="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl animate-bounce-slow" style={{animationIterationCount: 1}}>
+                            <Icon name={icons[modal.type]} size={48} className={`mx-auto mb-4 ${colors[modal.type]}`} />
+                            <p className="text-lg font-bold text-slate-700 mb-6">{modal.message}</p>
+                            <Button onClick={closeAlert} className="w-full" variant="primary">Oke!</Button>
+                        </div>
+                    </div>
+                );
+            };
+
+            // MAIN RENDER ROUTING
+            return (
+                <div className="antialiased text-slate-800">
+                    <div key={currentView} className="page-transition">
+                        {currentView === 'home' && <HomeView />}
+                        {currentView === 'login' && <LoginView />}
+                        {currentView === 'teacherLogin' && <TeacherLoginView />}
+                        {currentView === 'map' && <MapView />}
+                        {currentView === 'level1' && <Level1 />}
+                        {currentView === 'level2' && <Level2 />}
+                        {currentView === 'level3' && <Level3 />}
+                        {currentView === 'level4' && <Level4 />}
+                        {currentView === 'level5' && <Level5 />}
+                        {currentView === 'level6' && <Level6Hub />}
+                        {currentView === 'lkpd' && <LKPDView />}
+                        {currentView === 'quiz' && <QuizView />}
+                        {currentView === 'reflection' && <ReflectionView />}
+                        {currentView === 'certificate' && <CertificateView />}
+                        {currentView === 'dashboard' && <DashboardView />}
+                    </div>
+                    <ModalAlert />
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
